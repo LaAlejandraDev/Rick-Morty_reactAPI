@@ -1,21 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Characters = ({ characters, setCharacters }) => {
-  // console.log(characters)
+  // Estados nuevos para búsqueda y paginación
+  const [pagina, setPagina] = useState(1);
+  const [busqueda, setBusqueda] = useState("");
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [personajesActuales, setPersonajesActuales] = useState(characters);
 
-  //Función para resetear los personajes
+  // Función para volver al inicio (ya estaba)
   const resetCharacters = () => {
     setCharacters(null);
   };
+
+  // Función para traer personajes según búsqueda y página
+  const traerPersonajes = async (
+    numPagina = pagina,
+    terminoBusqueda = busqueda
+  ) => {
+    let url = `https://rickandmortyapi.com/api/character?page=${numPagina}`;
+    if (terminoBusqueda) {
+      url = `https://rickandmortyapi.com/api/character/?name=${terminoBusqueda}`;
+    }
+
+    const api = await fetch(url);
+    const personajesApi = await api.json();
+
+    if (personajesApi.results) {
+      setPersonajesActuales(personajesApi.results);
+      setTotalPaginas(personajesApi.info.pages);
+    } else {
+      setPersonajesActuales([]);
+      setTotalPaginas(1);
+    }
+  };
+
+  // Manejar input de búsqueda
+  const manejarBusqueda = (e) => {
+    const valor = e.target.value;
+    setBusqueda(valor);
+    setPagina(1);
+    traerPersonajes(1, valor);
+  };
+
+  // Funciones de paginación
+  const siguiente = () => {
+    if (pagina < totalPaginas) {
+      const nuevaPagina = pagina + 1;
+      setPagina(nuevaPagina);
+      traerPersonajes(nuevaPagina, busqueda);
+    }
+  };
+
+  const anterior = () => {
+    if (pagina > 1) {
+      const nuevaPagina = pagina - 1;
+      setPagina(nuevaPagina);
+      traerPersonajes(nuevaPagina, busqueda);
+    }
+  };
+
   return (
     <div className="characters">
-      <div> Characters</div>
       <span className="back-home" onClick={resetCharacters}>
-        {" "}
         Volver al inicio
       </span>
+
+      {/* Campo de búsqueda */}
+      <input
+        type="text"
+        placeholder="Buscar personaje..."
+        value={busqueda}
+        onChange={manejarBusqueda}
+        className="input-search"
+      />
+
       <div className="container-characters">
-        {characters.map((character, index) => (
+        {personajesActuales.map((character, index) => (
           <div className="character-container" key={index}>
             <div>
               <img src={character.image} alt={character.name} />
@@ -25,13 +85,11 @@ const Characters = ({ characters, setCharacters }) => {
               <h6>
                 {character.status === "Alive" ? (
                   <>
-                    <span className="alive" />
-                    Alive
+                    <span className="alive" /> Alive
                   </>
                 ) : (
                   <>
-                    <span className="dead" />
-                    Dead
+                    <span className="dead" /> Dead
                   </>
                 )}
               </h6>
@@ -47,8 +105,21 @@ const Characters = ({ characters, setCharacters }) => {
           </div>
         ))}
       </div>
+
+      {/* Botones de paginación */}
+      <div className="pagination">
+        <button onClick={anterior} disabled={pagina === 1}>
+          Anterior
+        </button>
+        <span>
+          Página {pagina} de {totalPaginas}
+        </span>
+        <button onClick={siguiente} disabled={pagina === totalPaginas}>
+          Siguiente
+        </button>
+      </div>
+
       <span className="back-home" onClick={resetCharacters}>
-        {" "}
         Volver al inicio
       </span>
     </div>
