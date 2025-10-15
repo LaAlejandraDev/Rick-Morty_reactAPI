@@ -67,6 +67,17 @@ const Characters = ({ characters, setCharacters }) => {
 
   return (
     <div className="characters">
+      <div className="pagination">
+        <button onClick={anterior} disabled={pagina === 1}>
+          Anterior
+        </button>
+        <span>
+          Página {pagina} de {totalPaginas}
+        </span>
+        <button onClick={siguiente} disabled={pagina === totalPaginas}>
+          Siguiente
+        </button>
+      </div>
       <span className="back-home" onClick={resetCharacters}>
         Volver al inicio
       </span>
