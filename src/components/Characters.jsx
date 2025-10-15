@@ -68,7 +68,7 @@ const Characters = ({ characters, setCharacters }) => {
   return (
     <div className="characters">
       <span className="back-home" onClick={resetCharacters}>
-        ⬅ Volver al inicio
+        Volver al inicio
       </span>
 
       {/* Campo de búsqueda */}
@@ -121,13 +121,13 @@ const Characters = ({ characters, setCharacters }) => {
       {/* Botones de paginación */}
       <div className="pagination">
         <button onClick={anterior} disabled={pagina === 1}>
-          ⬅ Anterior
+          Anterior
         </button>
         <span>
           Página {pagina} de {totalPaginas}
         </span>
         <button onClick={siguiente} disabled={pagina === totalPaginas}>
-          Siguiente ➡
+          Siguiente
         </button>
       </div>
 
